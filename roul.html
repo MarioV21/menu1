@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D AR Product Carousel</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    /* style.css content - START */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box; /* Added for better box model handling */
+    }
+
+    html,
+    body {
+      height: 100%;
+      /* for touch screen */
+      touch-action: none;
+      font-family: 'Inter', sans-serif; /* Using Inter font */
+    }
+
+    body {
+      overflow: hidden;
+      display: flex; /* Use flexbox */
+      flex-direction: column; /* Stack elements vertically */
+      justify-content: center; /* Center content vertically */
+      align-items: center;
+      background: #111;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+    }
+
+    h1 {
+      font-size: clamp(2em, 5vw, 3em); /* Responsive font size */
+      margin-bottom: 20px;
+      text-align: center;
+      color: #fff; /* Ensure visibility on dark background */
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.5); /* Add subtle shadow for better readability */
+    }
+
+    #drag-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto;
+      transform-style: preserve-3d;
+      transform: rotateX(-10deg); /* Initial slight tilt */
+      width: 100%; /* Make it responsive */
+      max-width: 600px; /* Limit max width on larger screens */
+      height: 400px; /* Set a height, will be adjusted by JS image dimensions */
+    }
+
+    #spin-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      /* Width and height set by JavaScript based on imgWidth/imgHeight */
+      /* These animations keep the carousel spinning when autoRotate is true */
+      animation: spin 60s infinite linear; /* Default auto-spin */
+    }
+
+    /* Keyframes for auto-rotation */
+    @keyframes spin {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+    @keyframes spinRevert {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(-360deg); }
+    }
+
+
+    /* Apply carousel image/video styles to model-viewer */
+    #spin-container model-viewer {
+      transform-style: preserve-3d;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%; /* Controlled by main.js imgWidth */
+      height: 100%; /* Controlled by main.js imgHeight */
+      line-height: normal;
+      font-size: 50px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.6); /* Enhanced shadow */
+      border-radius: 15px; /* Rounded corners for elements */
+      /* Reflect below, adjusted for white background */
+      -webkit-box-reflect: below 15px linear-gradient(transparent, transparent, rgba(255, 255, 255, 0.4));
+      background-color: #ffffff; /* Set background to white */
+      overflow: hidden; /* Ensure content stays within rounded corners */
+
+      /* Specific model-viewer properties */
+      --poster-color: transparent; /* Makes the poster background transparent */
+      --progress-bar-color: #4CAF50; /* Green progress bar */
+      --progress-bar-height: 4px;
+      --error-text-color: #ff4500; /* Orange-red for errors */
+    }
+
+    #spin-container model-viewer:hover {
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.9); /* More intense hover shadow */
+    }
+
+    /* Blast animation for the landed item */
+    @keyframes foodBlast {
+      0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.1) rotate(5deg); /* Slightly larger and rotated */
+        opacity: 0.9;
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+
+    .food-blast {
+      animation: foodBlast 0.5s ease-out; /* Apply the blast animation */
+    }
+
+
+    #drag-container p {
+      font-family: 'Inter', sans-serif;
+      position: absolute;
+      top: 100%; /* Position below carousel */
+      left: 50%;
+      transform: translate(-50%,-50%) rotateX(90deg);
+      color: #fff;
+      font-size: 1.2em;
+      opacity: 0.8;
+      white-space: nowrap; /* Prevent text wrapping */
+    }
+
+    #ground {
+      width: 900px;
+      height: 900px;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translate(-50%,-50%) rotateX(90deg);
+      background: -webkit-radial-gradient(center center, farthest-side , #9993, transparent);
+      border-radius: 50%; /* Make ground round */
+    }
+
+    .custom-ar-button {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 60px; /* Smaller AR button */
+      height: 60px;
+      border: none;
+      border-radius: 50%;
+      background-color: #4CAF50; /* Green background */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4); /* Stronger shadow */
+      background-image: url('https://lucide.dev/icons/ar-tracking.svg'); /* Example AR icon from lucide-react, adjust as needed */
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: 60% 60%;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    }
+
+    .custom-ar-button:hover {
+      transform: scale(1.1);
+      background-color: #45a049;
+    }
+
+    #roulette-button {
+        width: 100px; /* Fixed width for circular button */
+        height: 100px; /* Fixed height for circular button */
+        padding: 0; /* Remove padding for precise sizing */
+        font-size: 1.8em; /* Larger font for "Spin" */
+        font-weight: bold;
+        line-height: 100px; /* Vertically center text */
+        text-align: center; /* Horizontally center text */
+        cursor: pointer;
+        margin-top: 50px; /* Lift the button further from the carousel */
+        background: linear-gradient(145deg, #4CAF50, #45a049); /* Gradient background */
+        color: white;
+        border: none;
+        border-radius: 50%; /* Make it circular */
+        box-shadow: 0 6px 12px rgba(0,0,0,0.3), inset 0 -3px 5px rgba(0,0,0,0.2); /* Deeper shadow */
+        transition: all 0.3s ease;
+        z-index: 2;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        outline: none; /* Remove outline on focus */
+    }
+
+    #roulette-button:hover {
+        background: linear-gradient(145deg, #45a049, #367c39);
+        transform: translateY(-3px); /* Slight lift effect */
+        box-shadow: 0 8px 16px rgba(0,0,0,0.4), inset 0 -4px 6px rgba(0,0,0,0.2);
+    }
+
+    #roulette-button:active {
+        transform: translateY(1px); /* Press effect */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3), inset 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    #roulette-button:disabled {
+        background: #888;
+        cursor: not-allowed;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        transform: none;
+    }
+
+    /* Media Queries for Responsiveness */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: clamp(1.5em, 7vw, 2.5em);
+        margin-bottom: 15px;
+      }
+
+      #drag-container {
+        max-width: 90%; /* Take more width on smaller screens */
+        height: 300px; /* Adjust height */
+      }
+
+      #spin-container model-viewer {
+        /* Adjustments through JS for imgWidth/imgHeight will primarily handle scaling */
+        /* Reflect below adjustment for smaller screens */
+        -webkit-box-reflect: below 10px linear-gradient(transparent, transparent, rgba(255, 255, 255, 0.4));
+      }
+
+      #roulette-button {
+        width: 90px; /* Slightly smaller on tablets */
+        height: 90px;
+        line-height: 90px;
+        font-size: 1.6em;
+        margin-top: 40px; /* Adjusted margin for tablets */
+      }
+
+      .custom-ar-button {
+        width: 50px;
+        height: 50px;
+        bottom: 10px;
+        right: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: clamp(1.2em, 9vw, 2em);
+        margin-bottom: 10px;
+      }
+
+      #drag-container {
+        height: 250px; /* Further adjust height for very small screens */
+      }
+
+      #roulette-button {
+        width: 80px; /* Smaller on phones */
+        height: 80px;
+        line-height: 80px;
+        font-size: 1.4em;
+        margin-top: 30px; /* Adjusted margin for phones */
+      }
+
+      #drag-container p {
+        font-size: 1em;
+      }
+    }
+
+    /* style.css content - END */
+  </style>
+</head>
+<body>
+  <h1>Tap to View in AR</h1>
+
+  <div id="drag-container">
+    <div id="spin-container">
+      <model-viewer
+        src="Sushi.glb"
+        ios-src="Sushi.usdz"
+        alt="Delicious Sushi Roll"
+        ar
+        ar-modes="scene-viewer quick-look webxr"
+        auto-rotate
+        camera-controls
+        shadow-intensity="1"
+        exposure="1"
+        loading="lazy"
+        interaction-prompt="none"
+      >
+        <button slot="ar-button" class="custom-ar-button" aria-label="View in Augmented Reality"></button>
+      </model-viewer>
+
+      <model-viewer
+        src="Pizza.glb"
+        ios-src="Pizza.usdz"
+        alt="Classic Pepperoni Pizza"
+        ar
+        ar-modes="scene-viewer quick-look webxr"
+        auto-rotate
+        camera-controls
+        shadow-intensity="1"
+        exposure="1"
+        loading="lazy"
+        interaction-prompt="none"
+      >
+        <button slot="ar-button" class="custom-ar-button" aria-label="View in Augmented Reality"></button>
+      </model-viewer>
+
+      <model-viewer
+        src="Burger.glb"
+        ios-src="Burger.usdz"
+        alt="Juicy Burger"
+        ar
+        ar-modes="scene-viewer quick-look webxr"
+        auto-rotate
+        camera-controls
+        shadow-intensity="1"
+        exposure="1"
+        loading="lazy"
+        interaction-prompt="none"
+      >
+        <button slot="ar-button" class="custom-ar-button" aria-label="View in Augmented Reality"></button>
+      </model-viewer>
+
+      <model-viewer
+        src="Taco.glb"
+        ios-src="Taco.usdz"
+        alt="Crispy Taco"
+        ar
+        ar-modes="scene-viewer quick-look webxr"
+        auto-rotate
+        camera-controls
+        shadow-intensity="1"
+        exposure="1"
+        loading="lazy"
+        interaction-prompt="none"
+      >
+        <button slot="ar-button" class="custom-ar-button" aria-label="View in Augmented Reality"></button>
+      </model-viewer>
+
+      <model-viewer
+        src="Donut.glb"
+        ios-src="Donut.usdz"
+        alt="Sweet Glazed Donut"
+        ar
+        ar-modes="scene-viewer quick-look webxr"
+        auto-rotate
+        camera-controls
+        shadow-intensity="1"
+        exposure="1"
+        loading="lazy"
+        interaction-prompt="none"
+      >
+        <button slot="ar-button" class="custom-ar-button" aria-label="View in Augmented Reality"></button>
+      </model-viewer>
+
+      <p>3D AR Food Carousel</p>
+    </div>
+    <div id="ground"></div>
+  </div>
+
+  <button id="roulette-button">Spin</button>
+
+  <script>
+    // main.js content - START
+
+    // Global variables (you can change these)
+    // Adjust radius and image dimensions based on screen width for mobile responsiveness
+    var radius = window.innerWidth <= 480 ? 120 : 180; // Smaller radius for phones
+    var autoRotate = true; // Auto rotate or not
+    var rotateSpeed = -60; // Unit: seconds/360 degrees (negative for counter-clockwise)
+    var imgWidth = window.innerWidth <= 480 ? 150 : 180; // Smaller width for phones
+    var imgHeight = window.innerWidth <= 480 ? 200 : 250; // Smaller height for phones
+
+    // Link of background music - set 'null' if you don't want to play background music
+    var bgMusicURL = null;
+    var bgMusicControls = false;
+
+    // ===================== start =======================
+    // Animation starts after 1000 milliseconds to allow DOM to load
+    setTimeout(init, 1000);
+
+    var odrag = document.getElementById('drag-container');
+    var ospin = document.getElementById('spin-container');
+    var aEle = ospin.getElementsByTagName('model-viewer'); // Target model-viewer elements
+
+    // Set size of spin-container based on imgWidth and imgHeight
+    ospin.style.width = imgWidth + "px";
+    ospin.style.height = imgHeight + "px";
+
+    // Set size of ground - depends on radius
+    var ground = document.getElementById('ground');
+    ground.style.width = radius * 3 + "px";
+    ground.style.height = radius * 3 + "px";
+
+    // Initial positioning of 3D models in the carousel
+    function init(delayTime) {
+      for (var i = 0; i < aEle.length; i++) {
+        aEle[i].style.transform = "rotateY(" + (i * (360 / aEle.length)) + "deg) translateZ(" + radius + "px)";
+        aEle[i].style.transition = "transform 1s";
+        aEle[i].style.transitionDelay = delayTime || (aEle.length - i) / 4 + "s";
+      }
+    }
+
+    // Apply the current transformation based on tX (horizontal) and tY (vertical)
+    function applyTranform(obj) {
+      // Constrain the angle of camera (between -60 and 60 degrees vertical tilt)
+      if(tY > 60) tY = 60; // Max rotation downwards
+      if(tY < -60) tY = -60; // Max rotation upwards
+
+      obj.style.transform = "rotateX(" + (-tY) + "deg) rotateY(" + (tX) + "deg)";
+    }
+
+    // Controls the auto-spin animation
+    function playSpin(yes) {
+      if (yes) {
+        var animationName = (rotateSpeed > 0 ? 'spin' : 'spinRevert');
+        ospin.style.animation = `${animationName} ${Math.abs(rotateSpeed)}s infinite linear`;
+      } else {
+        ospin.style.animation = 'paused'; // Pause the CSS animation
+      }
+    }
+
+    // Variables for manual drag interaction
+    var sX, sY, nX, nY, desX = 0, desY = 0, tX = 0, tY = 10; // tY = 10 for slight initial tilt
+
+    // Start auto-spin if enabled
+    if (autoRotate) {
+      playSpin(true);
+    }
+
+    // Setup manual drag events
+    document.onpointerdown = function (e) {
+      clearInterval(odrag.timer); // Stop any ongoing decay timer
+      e = e || window.event;
+      sX = e.clientX;
+      sY = e.clientY;
+
+      this.onpointermove = function (e) {
+        e = e || window.event;
+        nX = e.clientX;
+        nY = e.clientY;
+        desX = nX - sX;
+        desY = nY - sY;
+        tX += desX * 0.1;
+        tY += desY * 0.1;
+        applyTranform(odrag);
+        sX = nX;
+        sY = nY;
+      };
+
+      this.onpointerup = function (e) {
+        odrag.timer = setInterval(function () {
+          desX *= 0.95; // Decay factor for horizontal drag
+          desY *= 0.95; // Decay factor for vertical drag
+          tX += desX * 0.1;
+          tY += desY * 0.1;
+          applyTranform(odrag);
+          playSpin(false); // Pause auto-spin during manual adjustment decay
+
+          // Stop decay when movement is negligible
+          if (Math.abs(desX) < 0.5 && Math.abs(desY) < 0.5) {
+            clearInterval(odrag.timer);
+            if (autoRotate) {
+              playSpin(true); // Resume auto-spin after manual adjustment decay
+            }
+          }
+        }, 17); // Update every ~17ms (approx 60fps)
+        this.onpointermove = this.onpointerup = null; // Clear event handlers
+      };
+
+      return false; // Prevent default drag behavior
+    };
+
+    // Mouse wheel for zoom (radius adjustment)
+    document.onmousewheel = function(e) {
+      e = e || window.event;
+      var d = e.wheelDelta / 20 || -e.detail; // Handle different browsers
+      radius += d; // Adjust radius based on wheel direction
+      init(1); // Re-initialize carousel with new radius
+    };
+
+    // Roulette Button Functionality
+    var rouletteButton = document.getElementById('roulette-button');
+    if (rouletteButton) {
+      rouletteButton.addEventListener('click', function() {
+        if (aEle.length === 0) return; // Do nothing if no models are present
+
+        playSpin(false); // Stop auto-rotate immediately
+        clearInterval(odrag.timer); // Stop any manual drag decay
+        rouletteButton.disabled = true; // Disable button during spin
+        document.onpointerdown = null; // Temporarily disable manual drag
+
+        // Explicitly set tY to initial value to prevent sideways tilt during spin
+        tY = 10; // Maintains initial slight tilt
+
+        // Calculate a random target item
+        var targetIndex = Math.floor(Math.random() * aEle.length);
+        var rotationPerItem = 360 / aEle.length;
+
+        // Calculate the target rotation to bring the chosen item to the front.
+        // We add multiple full rotations (e.g., 5 to 10) to make it spin.
+        // The rotation is negative to bring the item to the front (0 degrees on Y-axis).
+        var targetRotationValue = -((targetIndex * rotationPerItem) + (360 * (5 + Math.floor(Math.random() * 5)))); // Spin 5-9 extra times
+
+        // Apply transition and new transform to odrag
+        odrag.style.transition = 'transform 2s cubic-bezier(0.25, 0.1, 0.25, 1)'; // Faster, smooth ease-out spin
+        tX = targetRotationValue; // Update tX for the animation
+        applyTranform(odrag); // Apply the new transform with fixed tY
+
+        // Re-enable interactions and auto-rotate after transition
+        odrag.addEventListener('transitionend', function handler() {
+          odrag.removeEventListener('transitionend', handler); // Remove listener to prevent multiple firings
+          rouletteButton.disabled = false; // Re-enable button
+          odrag.style.transition = 'none'; // Remove transition for normal drag behavior
+
+          // Add blast animation to the landed item
+          const landedItem = aEle[targetIndex];
+          if (landedItem) {
+            landedItem.classList.add('food-blast');
+            setTimeout(() => {
+              landedItem.classList.remove('food-blast');
+            }, 500); // Animation duration is 0.5s
+          }
+
+          // Re-add manual drag functionality
+          document.onpointerdown = function (e) {
+            clearInterval(odrag.timer);
+            e = e || window.event;
+            sX = e.clientX;
+            sY = e.clientY;
+
+            this.onpointermove = function (e) {
+              e = e || window.event;
+              nX = e.clientX;
+              nY = e.clientY;
+              desX = nX - sX;
+              desY = nY - sY;
+              tX += desX * 0.1;
+              tY += desY * 0.1;
+              applyTranform(odrag);
+              sX = nX;
+              sY = nY;
+            };
+
+            this.onpointerup = function (e) {
+              odrag.timer = setInterval(function () {
+                desX *= 0.95;
+                desY *= 0.95;
+                tX += desX * 0.1;
+                tY += desY * 0.1;
+                applyTranform(odrag);
+                playSpin(false); // Pause auto-spin during manual adjustment decay
+                if (Math.abs(desX) < 0.5 && Math.abs(desY) < 0.5) {
+                  clearInterval(odrag.timer);
+                  if (autoRotate) {
+                    playSpin(true); // Resume auto-spin after manual adjustment decay
+                  }
+                }
+              }, 17);
+              this.onpointermove = this.onpointerup = null;
+            };
+
+            return false;
+          };
+
+          if (autoRotate) {
+            playSpin(true); // Resume auto-rotate if it was enabled
+          }
+        });
+      });
+    }
+    // main.js content - END
+  </script>
+</body>
+</html>

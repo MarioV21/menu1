@@ -1,0 +1,237 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+body {
+  margin: 0;
+  font-family: monospace;
+  background: #0d0e12;
+  color: #fff;
+}
+
+header {
+  position: absolute;
+  width: 100%;
+  z-index: 100;
+  border-bottom: 1px solid #fff4;
+}
+
+header ul {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+}
+
+header li {
+  color: #fff;
+  cursor: pointer;
+}
+
+header li a {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+  padding: 30px 40px;
+}
+
+header li.active,
+header li:hover {
+  border-bottom: 2px solid #fff;
+}
+
+.slider {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: linear-gradient(to right, #2b2f3a, #0d0e12);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.slider::before {
+  position: absolute;
+  width: 50%;
+  height: 100vh;
+  content: '';
+  top: 0;
+  left: 0;
+  background-color: #e88735;
+}
+
+.title {
+  position: absolute;
+  top: 10%;
+  right: 60%;
+  text-align: right;
+  color: #fff;
+  font-size: 150px;
+  width: 40%;
+  font-family: 'Pacifico', cursive;
+  text-shadow: 3px 5px 0px #478860;
+  line-height: 0.9em;
+  transform: rotate(-5deg);
+}
+
+.images {
+  position: absolute;
+  bottom: 0%;
+  left: 50%;
+  --rotate: 0deg;
+  transform: translate(-50%, 50%) rotate(var(--rotate));
+  width: 1300px;
+  height: 1300px;
+  border-radius: 50%;
+  transition: transform 0.5s ease-in-out;
+  outline: 3px dashed #fff5;
+  outline-offset: -100px;
+  z-index: 2;
+}
+
+.images .item {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  rotate: calc(60deg * var(--i));
+  transform-origin: center center;
+}
+
+.images .item img {
+  height: 420px;
+  pointer-events: none;
+}
+
+.images .item .image-buttons-container {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  justify-content: center;
+  gap: 20px;
+  z-index: 10;
+  rotate: calc(-1 * var(--i) * 60deg);
+}
+
+.images .item.active .image-buttons-container {
+  display: flex !important;
+}
+
+.images .item .ar-button,
+.images .item .see-more-btn {
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-size: 1em;
+  cursor: pointer;
+  border: 2px solid #e88735;
+  background-color: #e88735;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  user-select: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.images .item .ar-button:hover,
+.images .item .see-more-btn:hover {
+  background-color: #d1752b;
+  transform: translateY(-2px);
+}
+
+.content {
+  color: #fff;
+  position: absolute;
+  top: 10%;
+  left: 60%;
+  text-align: justify;
+  width: 350px;
+  z-index: 3;
+}
+
+.content h1 {
+  color: #e88735;
+  font-size: xxx-large;
+}
+
+.content .item {
+  display: none;
+}
+
+.content .item.active {
+  display: block;
+}
+
+@keyframes showContent {
+  from {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.content .item.active h1 {
+  opacity: 0;
+  animation: showContent 0.5s ease-in-out 1 forwards;
+}
+
+.content .item.active .des {
+  opacity: 0;
+  animation: showContent 0.5s 0.3s ease-in-out 1 forwards;
+}
+
+#prev,
+#next {
+  position: absolute;
+  border: none;
+  top: 50%;
+  left: 250px;
+  font-size: 100px;
+  font-family: cursive;
+  background-color: transparent;
+  color: #fff;
+  font-weight: bold;
+  opacity: 0.3;
+  cursor: pointer;
+  user-select: none;
+  transform: translateY(-50%);
+}
+
+#next {
+  left: unset;
+  right: 250px;
+}
+
+#next:hover,
+#prev:hover {
+  opacity: 1;
+}
+
+@media (min-width: 1025px) {
+  .ar-button {
+    display: none !important;
+  }
+}
+
+/* Make sure AR buttons show properly */
+.ios-only {
+  display: inline-block;
+}
+.android-only {
+  display: none;
+}
+
+/* Show model-viewer button only on Android */
+@media screen and (max-width: 1024px) {
+  .android-only {
+    display: inline-block !important;
+  }
+  .ios-only {
+    display: none !important;
+  }
+}
