@@ -1,4 +1,3 @@
-
 let prev, next, image, items, contents;
 let rotate = 0;
 let active = 0;

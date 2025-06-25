@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
 body {
@@ -6,6 +5,7 @@ body {
   font-family: monospace;
   background: #0d0e12;
   color: #fff;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 header {
@@ -48,6 +48,10 @@ header li:hover {
   background-image: linear-gradient(to right, #2b2f3a, #0d0e12);
   overflow: hidden;
   z-index: 1;
+  display: flex; /* Use flexbox for better content alignment */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .slider::before {
@@ -72,6 +76,7 @@ header li:hover {
   text-shadow: 3px 5px 0px #478860;
   line-height: 0.9em;
   transform: rotate(-5deg);
+  z-index: 4; /* Ensure title is above other elements */
 }
 
 .images {
@@ -80,8 +85,8 @@ header li:hover {
   left: 50%;
   --rotate: 0deg;
   transform: translate(-50%, 50%) rotate(var(--rotate));
-  width: 1300px;
-  height: 1300px;
+  width: 1300px; /* Fixed width */
+  height: 1300px; /* Fixed height */
   border-radius: 50%;
   transition: transform 0.5s ease-in-out;
   outline: 3px dashed #fff5;
@@ -99,20 +104,27 @@ header li:hover {
 }
 
 .images .item img {
-  height: 420px;
+  height: 420px; /* Fixed image height */
   pointer-events: none;
+  display: block; /* Ensures image takes up its own space */
+  margin: 0 auto; /* Center image horizontally */
 }
 
 .images .item .image-buttons-container {
   position: absolute;
-  bottom: 100px;
+  /* Adjust bottom to place buttons below the image */
+  bottom: 15%; /* Adjusted for better visibility on larger screens */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); /* Centering */
   display: none;
   justify-content: center;
   gap: 20px;
   z-index: 10;
+  /* Counter-rotate to keep buttons horizontal */
   rotate: calc(-1 * var(--i) * 60deg);
+  width: 100%; /* Take full width of parent .item */
+  padding: 0 20px; /* Add some padding */
+  box-sizing: border-box; /* Include padding in width */
 }
 
 .images .item.active .image-buttons-container {
@@ -134,6 +146,8 @@ header li:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   user-select: none;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  flex-grow: 1; /* Allow buttons to grow and fill space */
+  max-width: 180px; /* Limit button width */
 }
 
 .images .item .ar-button:hover,
@@ -200,6 +214,7 @@ header li:hover {
   cursor: pointer;
   user-select: none;
   transform: translateY(-50%);
+  z-index: 10; /* Ensure arrows are clickable */
 }
 
 #next {
@@ -212,26 +227,135 @@ header li:hover {
   opacity: 1;
 }
 
+/* Default display for AR buttons (desktop) */
 @media (min-width: 1025px) {
   .ar-button {
-    display: none !important;
+    display: none !important; /* Hide AR buttons on desktop by default */
   }
 }
 
-/* Make sure AR buttons show properly */
-.ios-only {
-  display: inline-block;
-}
-.android-only {
-  display: none;
-}
+/* Mobile-specific styles (max-width: 768px) */
+@media screen and (max-width: 768px) {
+  .slider {
+    flex-direction: column;
+    justify-content: flex-start; /* Start content from the top */
+  }
 
-/* Show model-viewer button only on Android */
-@media screen and (max-width: 1024px) {
+  .slider::before {
+    width: 100%; /* Make background fill full width */
+    height: 40%; /* Reduce height to make space for content */
+    top: 0;
+    left: 0;
+  }
+
+  header li a {
+    padding: 15px 20px; /* Smaller padding for header links */
+  }
+
+  .title {
+    position: static; /* Remove absolute positioning */
+    width: 90%;
+    font-size: 80px; /* Smaller font size */
+    text-align: center;
+    transform: none; /* Remove rotation */
+    margin-top: 20px; /* Add margin for spacing */
+    margin-bottom: 20px;
+  }
+
+  .images {
+    position: relative; /* Change to relative for flow */
+    width: 90vw; /* Responsive width based on viewport */
+    height: 90vw; /* Maintain aspect ratio */
+    bottom: unset;
+    left: 50%;
+    transform: translateX(-50%) rotate(var(--rotate)); /* Only horizontal centering and rotation */
+    outline-offset: -30px; /* Smaller outline offset */
+    margin-top: 20px; /* Add margin below title */
+  }
+
+  .images .item img {
+    height: 250px; /* Smaller image height for mobile */
+    margin-top: 50px; /* Adjust vertical position of images within the circle */
+  }
+
+  .images .item .image-buttons-container {
+    bottom: 20px; /* Adjust distance from the bottom of the image for mobile */
+    gap: 10px; /* Smaller gap between buttons */
+    flex-wrap: wrap; /* Allow buttons to wrap to next line if needed */
+  }
+
+  .images .item .ar-button,
+  .images .item .see-more-btn {
+    padding: 10px 20px; /* Smaller padding for buttons */
+    font-size: 0.9em; /* Smaller font size for buttons */
+    flex-grow: unset; /* Don't force growth, let content define size */
+    width: 100%; /* Make buttons full width in container for better tapping */
+    max-width: 150px; /* Max width to prevent overly wide buttons */
+  }
+
+  .content {
+    position: static; /* Remove absolute positioning */
+    width: 90%;
+    margin-top: 20px; /* Space from images */
+    text-align: center; /* Center content text */
+  }
+
+  .content h1 {
+    font-size: xx-large; /* Smaller heading size */
+  }
+
+  #prev,
+  #next {
+    top: 35%; /* Adjust vertical position of arrows */
+    font-size: 60px; /* Smaller arrow size */
+    left: 20px; /* Closer to the edge */
+  }
+
+  #next {
+    right: 20px; /* Closer to the edge */
+  }
+
+  /* Show model-viewer button only on Android, hide iOS on mobile (as per original logic) */
   .android-only {
     display: inline-block !important;
   }
   .ios-only {
     display: none !important;
+  }
+}
+
+/* Even smaller screens (e.g., small phones) */
+@media screen and (max-width: 480px) {
+  .title {
+    font-size: 60px;
+  }
+
+  .images {
+    width: 80vw;
+    height: 80vw;
+    outline-offset: -20px;
+  }
+
+  .images .item img {
+    height: 200px;
+    margin-top: 40px;
+  }
+
+  .images .item .image-buttons-container {
+    bottom: 10px; /* Closer to the bottom on very small screens */
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center; /* Center stacked buttons */
+  }
+
+  .images .item .ar-button,
+  .images .item .see-more-btn {
+    width: 80%; /* Make stacked buttons wider */
+    max-width: 200px;
+  }
+
+  #prev,
+  #next {
+    top: 30%;
+    font-size: 50px;
   }
 }
