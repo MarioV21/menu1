@@ -110,8 +110,11 @@ header li:hover {
 
 .images .item .image-buttons-container {
   position: absolute;
-  /* Adjust bottom to place buttons BELOW the image */
-  bottom: -100px; /* Negative value to push buttons further down from the item's bottom */
+  /* New calculated bottom value to place buttons visually below the image */
+  /* This positions the container relative to the bottom of the 1300px item */
+  /* Calculation: (1300px - (50px padding-top + 420px img-height) - button_height_estimate) */
+  /* Let's use 820px as determined in thought process for buttons below 420px img + 50px padding-top */
+  bottom: 820px; /* Positions buttons visually just below the image */
   left: 50%;
   transform: translateX(-50%); /* Center horizontally */
   display: none;
@@ -235,23 +238,25 @@ header li:hover {
 /* Mobile-specific styles (max-width: 768px) */
 @media screen and (max-width: 768px) {
   .slider {
-    flex-direction: column; /* Stack content vertically */
-    justify-content: flex-start; /* Align content to the top */
-    align-items: center;
-    height: auto; /* Allow height to adjust */
-    min-height: 100vh; /* Ensure it takes at least full viewport height */
+    /* Keep original full height and overflow hidden */
+    height: 100vh;
+    overflow: hidden;
   }
 
   .slider::before {
-    width: 100%;
-    height: 35%; /* Reduce height to give space for other content below */
+    width: 100%; /* Background fill full width */
+    height: 30%; /* Shorter background for more content visibility */
     top: 0;
     left: 0;
   }
 
   header {
-    position: relative; /* Allow header to flow naturally */
-    border-bottom: none;
+    position: absolute; /* Keep absolute for overlay */
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    border-bottom: 1px solid #fff4;
   }
 
   header ul {
@@ -259,81 +264,79 @@ header li:hover {
   }
 
   header li a {
-    padding: 15px 15px; /* Smaller padding for header links */
-    font-size: 0.9em;
+    padding: 10px 15px;
+    font-size: 0.8em;
   }
 
   .title {
-    position: relative; /* Remove absolute positioning */
+    position: absolute; /* Keep absolute */
+    top: 5%; /* Adjust position to be higher up */
+    left: 5%; /* Align left */
+    right: unset;
+    text-align: left;
     width: 90%;
-    font-size: 60px; /* Smaller font size */
-    text-align: center;
-    transform: none; /* Remove rotation */
-    margin: 20px auto 0; /* Center and add top margin */
-    line-height: 1em;
+    font-size: 50px; /* Smaller font */
+    transform: none; /* No rotation */
+    line-height: 1.1em;
   }
 
   .images {
-    position: relative; /* Change to relative for flow in mobile layout */
-    width: 90vw; /* Responsive width based on viewport */
-    height: 90vw; /* Maintain aspect ratio */
-    bottom: unset;
-    left: unset;
-    /* Maintain circular transform, adjust origin if needed */
-    transform: translateX(0) translateY(0) rotate(var(--rotate));
-    /* The 50% translate needs to be compensated for if not absolute centered */
-    /* Let's simplify: position relative, use flex or grid to center, then rotate */
-    /* Reverted to original transform for mobile too, as the issue was more about the parent container */
-    transform: translate(-50%, 50%) rotate(var(--rotate)); /* Original transform, still needed for rotation */
-    left: 50%; /* Re-center */
-    margin-top: 20px; /* Space from title */
-    outline-offset: -20px; /* Smaller outline offset */
-    margin-bottom: 80px; /* Add space below for buttons and content */
+    position: absolute; /* Keep absolute */
+    bottom: 0%; /* Keep at the bottom */
+    left: 50%;
+    transform: translate(-50%, 50%) rotate(var(--rotate)); /* CRITICAL: KEEP ORIGINAL TRANSFORM */
+    width: 650px; /* Significantly smaller fixed width for mobile view */
+    height: 650px; /* Significantly smaller fixed height for mobile view */
+    outline-offset: -50px; /* Adjust outline offset */
   }
 
   .images .item img {
-    height: 250px; /* Smaller image height for mobile */
+    height: 200px; /* Smaller image height */
     padding-top: 30px; /* Adjust padding to fit in smaller circle */
   }
 
   .images .item .image-buttons-container {
-    bottom: -80px; /* Adjust distance from the bottom of the image for mobile */
-    gap: 10px; /* Smaller gap between buttons */
-    flex-direction: column; /* Stack buttons vertically on small screens */
+    /* Recalculate bottom for mobile's smaller .images/.item size */
+    /* Image bottom will be 30px (padding) + 200px (height) = 230px from top of 650px item */
+    /* From bottom of item: 650px - 230px = 420px */
+    bottom: 410px; /* Adjust this value for mobile to place buttons below the scaled image */
+    gap: 10px;
+    flex-direction: column; /* Stack buttons vertically for better mobile tap target */
     align-items: center; /* Center stacked buttons */
   }
 
   .images .item .ar-button,
   .images .item .see-more-btn {
-    padding: 10px 20px; /* Smaller padding for buttons */
-    font-size: 0.9em; /* Smaller font size for buttons */
-    width: 80%; /* Make buttons wider when stacked */
-    max-width: 250px; /* Limit button width */
+    padding: 10px 20px;
+    font-size: 0.85em;
+    width: 80%; /* Make stacked buttons wider */
+    max-width: 200px; /* Limit width */
   }
 
   .content {
-    position: relative; /* Remove absolute positioning */
+    position: absolute; /* Keep absolute */
+    top: 40%; /* Position below title and above center of images */
+    left: 5%;
     width: 90%;
-    margin: 20px auto; /* Center and add margin */
-    text-align: center; /* Center content text */
-    padding-bottom: 50px; /* Ensure space at bottom */
+    text-align: left;
+    font-size: 0.9em;
   }
 
   .content h1 {
-    font-size: xx-large; /* Smaller heading size */
+    font-size: x-large;
   }
 
   #prev,
   #next {
-    top: 50%; /* Keep vertical centering */
-    font-size: 60px; /* Smaller arrow size */
-    left: 10px; /* Closer to the edge */
+    top: 50%; /* Keep vertical centering relative to slider */
+    font-size: 60px;
+    left: 10px;
     transform: translateY(-50%);
   }
 
   #next {
-    right: 10px; /* Closer to the edge */
-    left: unset; /* Ensure left is unset for 'right' to take effect */
+    right: 10px;
+    left: unset;
   }
 
   /* Show model-viewer button only on Android, hide iOS on mobile (as per original logic) */
@@ -345,30 +348,51 @@ header li:hover {
   }
 }
 
-/* Further adjustments for very small screens (e.g., small phones) */
+/* Further adjustments for very small screens (e.g., small phones, max-width: 480px) */
 @media screen and (max-width: 480px) {
   .title {
-    font-size: 45px;
+    font-size: 35px;
+    top: 5%;
   }
 
   .images {
-    width: 85vw; /* Slightly smaller circle */
-    height: 85vw;
-    outline-offset: -15px;
+    width: 450px; /* Even smaller circle */
+    height: 450px;
+    outline-offset: -20px;
+    bottom: -20px; /* Adjust if needed to fit lower */
   }
 
   .images .item img {
-    height: 200px; /* Even smaller image height */
-    padding-top: 20px;
+    height: 150px; /* Even smaller image height */
+    padding-top: 15px;
   }
 
   .images .item .image-buttons-container {
-    bottom: -60px; /* Closer to image */
-    gap: 8px; /* Smaller gap */
+    /* Recalculate bottom for smallest screens */
+    /* Image bottom: 15px (padding) + 150px (height) = 165px from top of 450px item */
+    /* From bottom of item: 450px - 165px = 285px */
+    bottom: 275px; /* Adjust this value */
+    gap: 5px;
+  }
+
+  .images .item .ar-button,
+  .images .item .see-more-btn {
+    padding: 8px 15px;
+    font-size: 0.7em;
+  }
+
+  .content {
+    top: 20%; /* Adjust content position for smaller space */
+    font-size: 0.8em;
+  }
+
+  .content h1 {
+    font-size: large;
   }
 
   #prev,
   #next {
-    font-size: 45px;
+    font-size: 35px;
+    top: 45%;
   }
 }
