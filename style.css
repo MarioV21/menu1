@@ -88,6 +88,7 @@ header li:hover {
 }
 
 .images .item {
+    pointer-events: none;
     position: absolute;
     width: 100%;
     height: 100%;
@@ -114,6 +115,7 @@ header li:hover {
 
 /* Button container */
 .images .item .image-buttons-container {
+    pointer-events: auto;
     display: flex;
     gap: 6px; /* 🔧 Tighter spacing between buttons */
     z-index: 10;
