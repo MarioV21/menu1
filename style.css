@@ -72,7 +72,7 @@ header li:hover {
   text-shadow: 3px 5px 0px #478860;
   line-height: 0.9em;
   transform: rotate(-5deg);
-  z-index: 4; /* Ensure title is above other elements */
+  z-index: 4;
 }
 
 .images {
@@ -80,10 +80,9 @@ header li:hover {
   bottom: 0%;
   left: 50%;
   --rotate: 0deg;
-  /* ORIGINAL: Crucial transform for the circular animation */
-  transform: translate(-50%, 50%) rotate(var(--rotate));
-  width: 1300px; /* ORIGINAL: Fixed width for desktop */
-  height: 1300px; /* ORIGINAL: Fixed height for desktop */
+  transform: translate(-50%, 50%) rotate(var(--rotate)); /* Crucial for animation, remains unchanged */
+  width: 1300px; /* Original fixed width for desktop */
+  height: 1300px; /* Original fixed height for desktop */
   border-radius: 50%;
   transition: transform 0.5s ease-in-out;
   outline: 3px dashed #fff5;
@@ -101,38 +100,32 @@ header li:hover {
 }
 
 .images .item img {
-  /* Positioning image absolutely within its item for precise button placement */
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 300px; /* Adjusted: Moves the image down within the 1300px circle item */
-  height: 420px; /* ORIGINAL: Fixed image height */
+  height: 420px; /* Original image height */
   pointer-events: none;
-  display: block; /* Ensure it behaves as a block element */
+  /* No additional positioning properties (like 'top' or 'position: absolute') here,
+     to ensure it doesn't interfere with the original layout and centering */
 }
 
 .images .item .image-buttons-container {
   position: absolute;
+  /* ADJUSTED: Move buttons up from the bottom of the 1300px item.
+     This value is chosen to place them visually below the image. */
+  bottom: 350px;
   left: 50%;
-  transform: translateX(-50%); /* Center horizontally */
-  /* CALCULATED: Position buttons just below the image */
-  /* Image bottom: (img top + img height) = 300px + 420px = 720px from item top */
-  /* Adding a small gap (e.g., 20px) means buttons start at 740px from item top */
-  top: 740px;
-  display: none; /* Hidden by default, shown for active item */
+  transform: translateX(-50%);
+  display: none;
   justify-content: center;
   gap: 20px;
   z-index: 10;
-  /* Counter-rotate to keep buttons horizontal and readable */
-  rotate: calc(-1 * var(--i) * 60deg);
+  rotate: calc(-1 * var(--i) * 60deg); /* Counter-rotate to keep buttons horizontal */
   width: auto; /* Allow buttons to size naturally */
-  max-width: 80%; /* Limit width to prevent overflow outside the visible area */
-  padding: 0 10px; /* Add some padding */
+  max-width: 80%; /* Prevent container from being too wide */
+  padding: 0 10px; /* Small horizontal padding */
   box-sizing: border-box; /* Include padding in width */
 }
 
 .images .item.active .image-buttons-container {
-  display: flex !important; /* Show buttons for the active item */
+  display: flex !important; /* Show buttons only for the active item */
 }
 
 .images .item .ar-button,
@@ -245,6 +238,7 @@ header li:hover {
   display: none;
 }
 
+/* Mobile responsive adjustments */
 @media screen and (max-width: 1024px) {
   .android-only {
     display: inline-block !important;
@@ -253,10 +247,8 @@ header li:hover {
     display: none !important;
   }
 
-  /* Responsive adjustments for mobile, focusing on scaling content */
-
   .title {
-    font-size: 80px; /* Scale down title */
+    font-size: 80px;
     top: 5%;
     right: 5%;
     width: auto;
@@ -264,40 +256,37 @@ header li:hover {
   }
 
   .images {
-    /* Scale down the entire circular image container */
-    width: 90vw; /* Use viewport width for responsiveness */
+    width: 90vw; /* Scale down the entire circular image container */
     height: 90vw; /* Maintain aspect ratio */
     outline-offset: -50px;
-    /* Maintain original transform for circular animation */
+    /* Keeping original transform for animation */
     transform: translate(-50%, 50%) rotate(var(--rotate));
-    bottom: -10vh; /* Adjust bottom slightly to fit content */
+    bottom: -10vh; /* Adjust overall circle position to fit content */
   }
 
   .images .item img {
-    height: 200px; /* Scale down image height */
-    top: 50px; /* Adjust image position within the scaled circle */
+    height: 200px; /* Scale image down for mobile */
+    /* No positioning here, rely on parent text-align: center and natural flow */
   }
 
   .images .item .image-buttons-container {
-    /* Recalculate top for buttons based on scaled image position */
-    /* Image bottom: (img top + img height) = 50px + 200px = 250px from item top */
-    /* Buttons start at ~260px from item top (250px + 10px gap) */
-    top: 260px;
+    /* Adjusted for mobile scale: Move buttons up within the smaller item */
+    bottom: 120px;
     gap: 10px;
-    flex-direction: column; /* Stack buttons vertically for better mobile tap target */
-    max-width: 150px; /* Limit overall button container width */
+    flex-direction: column; /* Stack buttons vertically on mobile */
+    max-width: 150px;
   }
 
   .images .item .ar-button,
   .images .item .see-more-btn {
-    width: 100%; /* Make buttons full width in their stacked container */
-    max-width: 200px; /* Ensure they don't get too wide */
+    width: 100%; /* Fill available space when stacked */
+    max-width: 180px;
     font-size: 0.9em;
     padding: 10px 15px;
   }
 
   .content {
-    top: 50%; /* Adjust content block position */
+    top: 50%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -328,21 +317,17 @@ header li:hover {
     width: 100vw;
     height: 100vw;
     outline-offset: -20px;
-    bottom: -15vh; /* Push further down to make room for content/title */
+    bottom: -15vh; /* Further adjust for very small screens */
   }
 
   .images .item img {
-    height: 150px; /* Smaller image height */
-    top: 40px; /* Adjust image position */
+    height: 150px; /* Even smaller image */
   }
 
   .images .item .image-buttons-container {
-    /* Recalculate top for smallest screens */
-    /* Image bottom: (img top + img height) = 40px + 150px = 190px from item top */
-    /* Buttons start at ~200px from item top */
-    top: 200px;
+    bottom: 80px; /* Adjusted for smallest screens */
     gap: 5px;
-    max-width: 100px;
+    max-width: 120px;
   }
 
   .images .item .ar-button,
@@ -352,7 +337,7 @@ header li:hover {
   }
 
   .content {
-    top: 40%; /* Adjust content position */
+    top: 40%;
     font-size: 0.8em;
   }
 
