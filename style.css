@@ -48,10 +48,6 @@ header li:hover {
   background-image: linear-gradient(to right, #2b2f3a, #0d0e12);
   overflow: hidden;
   z-index: 1;
-  display: flex; /* Use flexbox for better content alignment */
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .slider::before {
@@ -84,9 +80,10 @@ header li:hover {
   bottom: 0%;
   left: 50%;
   --rotate: 0deg;
+  /* Original transform for circular animation */
   transform: translate(-50%, 50%) rotate(var(--rotate));
-  width: 1300px; /* Fixed width */
-  height: 1300px; /* Fixed height */
+  width: 1300px; /* Maintain fixed width for original desktop look */
+  height: 1300px; /* Maintain fixed height for original desktop look */
   border-radius: 50%;
   transition: transform 0.5s ease-in-out;
   outline: 3px dashed #fff5;
@@ -106,23 +103,24 @@ header li:hover {
 .images .item img {
   height: 420px; /* Fixed image height */
   pointer-events: none;
-  display: block; /* Ensures image takes up its own space */
-  margin: 0 auto; /* Center image horizontally */
+  display: block; /* Ensure image takes up its own space */
+  margin: 0 auto; /* Center image horizontally within its slot */
+  padding-top: 50px; /* Push image down slightly within its item to give space for buttons */
 }
 
 .images .item .image-buttons-container {
   position: absolute;
-  /* Adjust bottom to place buttons below the image */
-  bottom: 15%; /* Adjusted for better visibility on larger screens */
+  /* Adjust bottom to place buttons BELOW the image */
+  bottom: -100px; /* Negative value to push buttons further down from the item's bottom */
   left: 50%;
-  transform: translateX(-50%); /* Centering */
+  transform: translateX(-50%); /* Center horizontally */
   display: none;
   justify-content: center;
   gap: 20px;
   z-index: 10;
   /* Counter-rotate to keep buttons horizontal */
   rotate: calc(-1 * var(--i) * 60deg);
-  width: 100%; /* Take full width of parent .item */
+  width: 100%; /* Take full width of parent .item for centering */
   padding: 0 20px; /* Add some padding */
   box-sizing: border-box; /* Include padding in width */
 }
@@ -237,67 +235,88 @@ header li:hover {
 /* Mobile-specific styles (max-width: 768px) */
 @media screen and (max-width: 768px) {
   .slider {
-    flex-direction: column;
-    justify-content: flex-start; /* Start content from the top */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: flex-start; /* Align content to the top */
+    align-items: center;
+    height: auto; /* Allow height to adjust */
+    min-height: 100vh; /* Ensure it takes at least full viewport height */
   }
 
   .slider::before {
-    width: 100%; /* Make background fill full width */
-    height: 40%; /* Reduce height to make space for content */
+    width: 100%;
+    height: 35%; /* Reduce height to give space for other content below */
     top: 0;
     left: 0;
   }
 
+  header {
+    position: relative; /* Allow header to flow naturally */
+    border-bottom: none;
+  }
+
+  header ul {
+    padding: 10px 0;
+  }
+
   header li a {
-    padding: 15px 20px; /* Smaller padding for header links */
+    padding: 15px 15px; /* Smaller padding for header links */
+    font-size: 0.9em;
   }
 
   .title {
-    position: static; /* Remove absolute positioning */
+    position: relative; /* Remove absolute positioning */
     width: 90%;
-    font-size: 80px; /* Smaller font size */
+    font-size: 60px; /* Smaller font size */
     text-align: center;
     transform: none; /* Remove rotation */
-    margin-top: 20px; /* Add margin for spacing */
-    margin-bottom: 20px;
+    margin: 20px auto 0; /* Center and add top margin */
+    line-height: 1em;
   }
 
   .images {
-    position: relative; /* Change to relative for flow */
+    position: relative; /* Change to relative for flow in mobile layout */
     width: 90vw; /* Responsive width based on viewport */
     height: 90vw; /* Maintain aspect ratio */
     bottom: unset;
-    left: 50%;
-    transform: translateX(-50%) rotate(var(--rotate)); /* Only horizontal centering and rotation */
-    outline-offset: -30px; /* Smaller outline offset */
-    margin-top: 20px; /* Add margin below title */
+    left: unset;
+    /* Maintain circular transform, adjust origin if needed */
+    transform: translateX(0) translateY(0) rotate(var(--rotate));
+    /* The 50% translate needs to be compensated for if not absolute centered */
+    /* Let's simplify: position relative, use flex or grid to center, then rotate */
+    /* Reverted to original transform for mobile too, as the issue was more about the parent container */
+    transform: translate(-50%, 50%) rotate(var(--rotate)); /* Original transform, still needed for rotation */
+    left: 50%; /* Re-center */
+    margin-top: 20px; /* Space from title */
+    outline-offset: -20px; /* Smaller outline offset */
+    margin-bottom: 80px; /* Add space below for buttons and content */
   }
 
   .images .item img {
     height: 250px; /* Smaller image height for mobile */
-    margin-top: 50px; /* Adjust vertical position of images within the circle */
+    padding-top: 30px; /* Adjust padding to fit in smaller circle */
   }
 
   .images .item .image-buttons-container {
-    bottom: 20px; /* Adjust distance from the bottom of the image for mobile */
+    bottom: -80px; /* Adjust distance from the bottom of the image for mobile */
     gap: 10px; /* Smaller gap between buttons */
-    flex-wrap: wrap; /* Allow buttons to wrap to next line if needed */
+    flex-direction: column; /* Stack buttons vertically on small screens */
+    align-items: center; /* Center stacked buttons */
   }
 
   .images .item .ar-button,
   .images .item .see-more-btn {
     padding: 10px 20px; /* Smaller padding for buttons */
     font-size: 0.9em; /* Smaller font size for buttons */
-    flex-grow: unset; /* Don't force growth, let content define size */
-    width: 100%; /* Make buttons full width in container for better tapping */
-    max-width: 150px; /* Max width to prevent overly wide buttons */
+    width: 80%; /* Make buttons wider when stacked */
+    max-width: 250px; /* Limit button width */
   }
 
   .content {
-    position: static; /* Remove absolute positioning */
+    position: relative; /* Remove absolute positioning */
     width: 90%;
-    margin-top: 20px; /* Space from images */
+    margin: 20px auto; /* Center and add margin */
     text-align: center; /* Center content text */
+    padding-bottom: 50px; /* Ensure space at bottom */
   }
 
   .content h1 {
@@ -306,13 +325,15 @@ header li:hover {
 
   #prev,
   #next {
-    top: 35%; /* Adjust vertical position of arrows */
+    top: 50%; /* Keep vertical centering */
     font-size: 60px; /* Smaller arrow size */
-    left: 20px; /* Closer to the edge */
+    left: 10px; /* Closer to the edge */
+    transform: translateY(-50%);
   }
 
   #next {
-    right: 20px; /* Closer to the edge */
+    right: 10px; /* Closer to the edge */
+    left: unset; /* Ensure left is unset for 'right' to take effect */
   }
 
   /* Show model-viewer button only on Android, hide iOS on mobile (as per original logic) */
@@ -324,38 +345,30 @@ header li:hover {
   }
 }
 
-/* Even smaller screens (e.g., small phones) */
+/* Further adjustments for very small screens (e.g., small phones) */
 @media screen and (max-width: 480px) {
   .title {
-    font-size: 60px;
+    font-size: 45px;
   }
 
   .images {
-    width: 80vw;
-    height: 80vw;
-    outline-offset: -20px;
+    width: 85vw; /* Slightly smaller circle */
+    height: 85vw;
+    outline-offset: -15px;
   }
 
   .images .item img {
-    height: 200px;
-    margin-top: 40px;
+    height: 200px; /* Even smaller image height */
+    padding-top: 20px;
   }
 
   .images .item .image-buttons-container {
-    bottom: 10px; /* Closer to the bottom on very small screens */
-    flex-direction: column; /* Stack buttons vertically */
-    align-items: center; /* Center stacked buttons */
-  }
-
-  .images .item .ar-button,
-  .images .item .see-more-btn {
-    width: 80%; /* Make stacked buttons wider */
-    max-width: 200px;
+    bottom: -60px; /* Closer to image */
+    gap: 8px; /* Smaller gap */
   }
 
   #prev,
   #next {
-    top: 30%;
-    font-size: 50px;
+    font-size: 45px;
   }
 }
