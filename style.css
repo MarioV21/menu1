@@ -104,7 +104,7 @@ header li:hover {
     height: 420px;
 }
 
-/* ✅ Outer wrapper for counter-rotation to keep buttons upright */
+/* Counter-rotated wrapper to keep buttons facing upright */
 .images .item .image-buttons-outer {
     margin-top: 20px;
     transform: rotate(calc(-1 * var(--i) * 60deg));
@@ -112,20 +112,20 @@ header li:hover {
     justify-content: center;
 }
 
-/* ✅ Button container inside upright wrapper */
+/* Button container */
 .images .item .image-buttons-container {
     display: flex;
-    gap: 20px;
+    gap: 6px; /* 🔧 Tighter spacing between buttons */
     z-index: 10;
 }
 
-/* ✅ Button styles */
+/* Compact button styles */
 .images .item .ar-button,
 .images .item .see-more-btn {
-    padding: 12px 25px;
+    padding: 10px 18px; /* 🔧 Smaller padding */
     border-radius: 25px;
     text-decoration: none;
-    font-size: 1em;
+    font-size: 0.9em; /* 🔧 Slightly smaller font */
     cursor: pointer;
     border: none;
     text-align: center;
