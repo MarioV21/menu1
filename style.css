@@ -91,30 +91,35 @@ header li:hover {
     position: absolute;
     width: 100%;
     height: 100%;
-    text-align: center;
     rotate: calc(60deg * var(--i));
     transform-origin: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    text-align: center;
 }
 
 .images .item img {
     height: 420px;
 }
 
-/* ✅ Attach buttons directly under each image and stay upright */
-.images .item .image-buttons-container {
-    margin-top: 20px; /* Distance under image */
+/* ✅ Outer wrapper for counter-rotation to keep buttons upright */
+.images .item .image-buttons-outer {
+    margin-top: 20px;
     transform: rotate(calc(-1 * var(--i) * 60deg));
     display: flex;
     justify-content: center;
+}
+
+/* ✅ Button container inside upright wrapper */
+.images .item .image-buttons-container {
+    display: flex;
     gap: 20px;
     z-index: 10;
 }
 
-/* Button styles */
+/* ✅ Button styles */
 .images .item .ar-button,
 .images .item .see-more-btn {
     padding: 12px 25px;
