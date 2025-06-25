@@ -39,14 +39,13 @@ header li:hover {
     border-bottom: 2px solid #fff;
 }
 
-
 .slider {
     position: relative;
     width: 100%;
     height: 100vh;
     background-image: linear-gradient(to right, #2B2F3A, #0D0E12);
     overflow: hidden;
-    z-index: 1; /* Added to ensure proper stacking context */
+    z-index: 1;
 }
 
 .slider::before {
@@ -85,7 +84,7 @@ header li:hover {
     transition: transform 0.5s ease-in-out;
     outline: 3px dashed #fff5;
     outline-offset: -100px;
-    z-index: 2; /* Ensures images are above slider background */
+    z-index: 2;
 }
 
 .images .item {
@@ -100,28 +99,29 @@ header li:hover {
     height: 420px;
 }
 
-/* Styles for the container holding buttons within each image item */
+/* ✅ Fixed buttons position and visibility */
 .images .item .image-buttons-container {
     position: absolute;
-    bottom: 100px; /* Position below the image - adjust as needed */
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* For true centering */
-    width: 100%;
-    
-    display: flex; /* Hidden by default */
-    justify-content: center; /* Center buttons horizontally */
-    gap: 20px; /* Space between the two buttons */
-    z-index: 10; /* Ensure they are above other elements */
-
-    rotate: calc(-1 * var(--i) * 60deg); /* Counter-rotation */
+    top: 580px; /* Below the image */
+    left: 50%;
+    transform: translateX(-50%) rotate(calc(-1 * var(--i) * 60deg));
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: max-content;
+    z-index: 10;
+    pointer-events: auto;
 }
 
-/* Show buttons only when the parent image item is active */
+/* Optional: Only show for active image
+.images .item .image-buttons-container {
+    display: none;
+}
 .images .item.active .image-buttons-container {
-    display: flex !important; /* Force display:flex when active */
+    display: flex !important;
 }
+*/
 
-/* Styles for the individual buttons inside image-buttons-container */
 .images .item .ar-button,
 .images .item .see-more-btn {
     padding: 12px 25px;
@@ -156,7 +156,6 @@ header li:hover {
     transform: translateY(-2px);
 }
 
-
 .content {
     color: #fff;
     position: absolute;
@@ -164,7 +163,7 @@ header li:hover {
     left: 60%;
     text-align: justify;
     width: 350px;
-    z-index: 3; /* NEW: Ensure content appears above the images */
+    z-index: 3;
 }
 
 .content h1 {
