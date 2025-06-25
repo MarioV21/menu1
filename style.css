@@ -1,352 +1,226 @@
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
 body {
-  margin: 0;
-  font-family: monospace;
-  background: #0d0e12;
-  color: #fff;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
+    margin: 0;
+    font-family: monospace;
 }
 
 header {
-  position: absolute;
-  width: 100%;
-  z-index: 100;
-  border-bottom: 1px solid #fff4;
+    position: absolute;
+    width: 100%;
+    z-index: 100;
+    border-bottom: 1px solid #fff4;
 }
 
 header ul {
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    list-style: none;
 }
 
 header li {
-  color: #fff;
-  cursor: pointer;
+    color: #fff;
+    cursor: pointer;
 }
 
 header li a {
-  color: inherit;
-  text-decoration: none;
-  display: block;
-  padding: 30px 40px;
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    padding: 30px 40px;
 }
 
 header li.active,
 header li:hover {
-  border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #fff;
 }
 
+
 .slider {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  background-image: linear-gradient(to right, #2b2f3a, #0d0e12);
-  overflow: hidden;
-  z-index: 1;
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background-image: linear-gradient(to right, #2B2F3A, #0D0E12);
+    overflow: hidden;
+    z-index: 1; /* Added to ensure proper stacking context */
 }
 
 .slider::before {
-  position: absolute;
-  width: 50%;
-  height: 100vh;
-  content: '';
-  top: 0;
-  left: 0;
-  background-color: #e88735;
+    position: absolute;
+    width: 50%;
+    height: 100vh;
+    content: '';
+    top: 0;
+    left: 0;
+    background-color: #E88735;
 }
 
 .title {
-  position: absolute;
-  top: 10%;
-  right: 60%;
-  text-align: right;
-  color: #fff;
-  font-size: 150px;
-  width: 40%;
-  font-family: 'Pacifico', cursive;
-  text-shadow: 3px 5px 0px #478860;
-  line-height: 0.9em;
-  transform: rotate(-5deg);
-  z-index: 4;
+    position: absolute;
+    top: 10%;
+    right: 60%;
+    text-align: right;
+    color: #fff;
+    font-size: 150px;
+    width: 40%;
+    font-family: 'Pacifico', cursive;
+    text-shadow: 3px 5px 0px #478860;
+    line-height: .9em;
+    transform: rotate(-5deg);
 }
 
 .images {
-  position: absolute;
-  bottom: 0%;
-  left: 50%;
-  --rotate: 0deg;
-  transform: translate(-50%, 50%) rotate(var(--rotate)); /* Crucial for animation, remains unchanged */
-  width: 1300px; /* Original fixed width for desktop */
-  height: 1300px; /* Original fixed height for desktop */
-  border-radius: 50%;
-  transition: transform 0.5s ease-in-out;
-  outline: 3px dashed #fff5;
-  outline-offset: -100px;
-  z-index: 2;
+    position: absolute;
+    bottom: 0%;
+    left: 50%;
+    --rotate: 0deg;
+    transform: translate(-50%, 50%) rotate(var(--rotate));
+    width: 1300px;
+    height: 1300px;
+    border-radius: 50%;
+    transition: transform 0.5s ease-in-out;
+    outline: 3px dashed #fff5;
+    outline-offset: -100px;
+    z-index: 2; /* Ensures images are above slider background */
 }
 
 .images .item {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  rotate: calc(60deg * var(--i));
-  transform-origin: center center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    rotate: calc(60deg * var(--i));
 }
 
 .images .item img {
-  height: 420px; /* Original image height */
-  pointer-events: none;
-  /* No additional positioning properties (like 'top' or 'position: absolute') here,
-     to ensure it doesn't interfere with the original layout and centering */
+    height: 420px;
 }
 
+/* Styles for the container holding buttons within each image item */
 .images .item .image-buttons-container {
-  position: absolute;
-  /* ADJUSTED: Move buttons up from the bottom of the 1300px item.
-     This value is chosen to place them visually below the image. */
-  bottom: 350px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-  justify-content: center;
-  gap: 20px;
-  z-index: 10;
-  rotate: calc(-1 * var(--i) * 60deg); /* Counter-rotate to keep buttons horizontal */
-  width: auto; /* Allow buttons to size naturally */
-  max-width: 80%; /* Prevent container from being too wide */
-  padding: 0 10px; /* Small horizontal padding */
-  box-sizing: border-box; /* Include padding in width */
+    position: absolute;
+    bottom: 100px; /* Position below the image - adjust as needed */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* For true centering */
+    width: 100%;
+    
+    display: flex; /* Hidden by default */
+    justify-content: center; /* Center buttons horizontally */
+    gap: 20px; /* Space between the two buttons */
+    z-index: 10; /* Ensure they are above other elements */
+
+    rotate: calc(-1 * var(--i) * 60deg); /* Counter-rotation */
 }
 
+/* Show buttons only when the parent image item is active */
 .images .item.active .image-buttons-container {
-  display: flex !important; /* Show buttons only for the active item */
+    display: flex !important; /* Force display:flex when active */
 }
 
+/* Styles for the individual buttons inside image-buttons-container */
 .images .item .ar-button,
 .images .item .see-more-btn {
-  padding: 12px 25px;
-  border-radius: 25px;
-  font-size: 1em;
-  cursor: pointer;
-  border: 2px solid #e88735; /* Orange border */
-  background-color: #e88735; /* Orange background */
-  color: #fff; /* White text */
-  text-decoration: none;
-  text-align: center;
-  white-space: nowrap;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  user-select: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  flex-grow: 1; /* Allow buttons to grow and fill space */
-  max-width: 180px; /* Limit button width */
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    white-space: nowrap;
 }
 
-.images .item .ar-button:hover,
-.images .item .see-more-btn:hover {
-  background-color: #d1752b; /* Slightly darker orange on hover */
-  transform: translateY(-2px);
+.images .item .ar-button {
+    background-color: #E88735;
+    color: #fff;
 }
+
+.images .item .ar-button:hover {
+    background-color: #d1752b;
+    transform: translateY(-2px);
+}
+
+.images .item .see-more-btn {
+    background-color: #E88735;
+    color: #fff;
+}
+
+.images .item .see-more-btn:hover {
+    background-color: #d1752b;
+    transform: translateY(-2px);
+}
+
 
 .content {
-  color: #fff;
-  position: absolute;
-  top: 10%;
-  left: 60%;
-  text-align: justify;
-  width: 350px;
-  z-index: 3;
+    color: #fff;
+    position: absolute;
+    top: 10%;
+    left: 60%;
+    text-align: justify;
+    width: 350px;
+    z-index: 3; /* NEW: Ensure content appears above the images */
 }
 
 .content h1 {
-  color: #e88735;
-  font-size: xxx-large;
+    color: #E88735;
+    font-size: xxx-large;
 }
 
 .content .item {
-  display: none;
+    display: none;
 }
 
 .content .item.active {
-  display: block;
+    display: block;
 }
 
 @keyframes showContent {
-  from {
-    opacity: 0;
-    transform: translateY(100px);
-  }
-  to {
-    opacity: 1;
-  }
+    from {
+        opacity: 0;
+        transform: translateY(100px);
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .content .item.active h1 {
-  opacity: 0;
-  animation: showContent 0.5s ease-in-out 1 forwards;
+    opacity: 0;
+    animation: showContent 0.5s ease-in-out 1 forwards;
 }
 
 .content .item.active .des {
-  opacity: 0;
-  animation: showContent 0.5s 0.3s ease-in-out 1 forwards;
+    opacity: 0;
+    animation: showContent 0.5s 0.3s ease-in-out 1 forwards;
 }
 
 #prev,
 #next {
-  position: absolute;
-  border: none;
-  top: 50%;
-  left: 250px;
-  font-size: 100px;
-  font-family: cursive;
-  background-color: transparent;
-  color: #fff;
-  font-weight: bold;
-  opacity: 0.3;
-  cursor: pointer;
-  user-select: none;
-  transform: translateY(-50%);
-  z-index: 10;
+    position: absolute;
+    border: none;
+    top: 50%;
+    left: 250px;
+    font-size: 100px;
+    font-family: cursive;
+    background-color: transparent;
+    color: #fff;
+    font-weight: bold;
+    opacity: 0.3;
+    cursor: pointer;
 }
 
 #next {
-  left: unset;
-  right: 250px;
+    left: unset;
+    right: 250px;
 }
 
 #next:hover,
 #prev:hover {
-  opacity: 1;
-}
-
-/* Original AR button visibility logic (desktop vs mobile) */
-@media (min-width: 1025px) {
-  .ar-button {
-    display: none !important;
-  }
-}
-
-.ios-only {
-  display: inline-block;
-}
-.android-only {
-  display: none;
-}
-
-/* Mobile responsive adjustments */
-@media screen and (max-width: 1024px) {
-  .android-only {
-    display: inline-block !important;
-  }
-  .ios-only {
-    display: none !important;
-  }
-
-  .title {
-    font-size: 80px;
-    top: 5%;
-    right: 5%;
-    width: auto;
-    text-align: right;
-  }
-
-  .images {
-    width: 90vw; /* Scale down the entire circular image container */
-    height: 90vw; /* Maintain aspect ratio */
-    outline-offset: -50px;
-    /* Keeping original transform for animation */
-    transform: translate(-50%, 50%) rotate(var(--rotate));
-    bottom: -10vh; /* Adjust overall circle position to fit content */
-  }
-
-  .images .item img {
-    height: 200px; /* Scale image down for mobile */
-    /* No positioning here, rely on parent text-align: center and natural flow */
-  }
-
-  .images .item .image-buttons-container {
-    /* Adjusted for mobile scale: Move buttons up within the smaller item */
-    bottom: 120px;
-    gap: 10px;
-    flex-direction: column; /* Stack buttons vertically on mobile */
-    max-width: 150px;
-  }
-
-  .images .item .ar-button,
-  .images .item .see-more-btn {
-    width: 100%; /* Fill available space when stacked */
-    max-width: 180px;
-    font-size: 0.9em;
-    padding: 10px 15px;
-  }
-
-  .content {
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    width: 90%;
-    font-size: 0.9em;
-  }
-
-  .content h1 {
-    font-size: x-large;
-  }
-
-  #prev,
-  #next {
-    font-size: 60px;
-    left: 10px;
-    right: 10px;
-  }
-}
-
-/* Further mobile adjustments for very small screens (max-width: 480px) */
-@media screen and (max-width: 480px) {
-  .title {
-    font-size: 40px;
-    top: 3%;
-  }
-
-  .images {
-    width: 100vw;
-    height: 100vw;
-    outline-offset: -20px;
-    bottom: -15vh; /* Further adjust for very small screens */
-  }
-
-  .images .item img {
-    height: 150px; /* Even smaller image */
-  }
-
-  .images .item .image-buttons-container {
-    bottom: 80px; /* Adjusted for smallest screens */
-    gap: 5px;
-    max-width: 120px;
-  }
-
-  .images .item .ar-button,
-  .images .item .see-more-btn {
-    font-size: 0.8em;
-    padding: 8px 10px;
-  }
-
-  .content {
-    top: 40%;
-    font-size: 0.8em;
-  }
-
-  .content h1 {
-    font-size: large;
-  }
-
-  #prev,
-  #next {
-    font-size: 40px;
-  }
+    opacity: 1;
 }
