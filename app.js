@@ -98,6 +98,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Adjust AR button hrefs for direct AR launch on mobile ---
+
+    arButtons.forEach(button => {
+        const usdzUrl = button.getAttribute('href');      // e.g. "ar_models/Sushi.usdz"
+        const glbUrl = button.getAttribute('data-gltf');  // e.g. "ar_models/Sushi.glb"
+
+        // Convert relative URLs to absolute URLs to avoid issues
+        const fullUsdzUrl = new URL(usdzUrl, window.location.href).href;
+        const fullGlbUrl = new URL(glbUrl, window.location.href).href;
+
+        function isiOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        function isAndroid() {
+            return /Android/.test(navigator.userAgent);
+        }
+
+        if (isiOS()) {
+            // iOS: use direct .usdz link with rel="ar" to open AR Quick Look
+            button.setAttribute('href', fullUsdzUrl);
+            button.setAttribute('rel', 'ar');
+            button.setAttribute('target', '_blank');
+        } else if (isAndroid()) {
+            // Android: use intent URL for Google Scene Viewer AR
+            const intentUrl = `intent://arvr.google.com/scene-viewer/1.0?file=${encodeURIComponent(fullGlbUrl)}#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=${encodeURIComponent(fullGlbUrl)};end;`;
+            button.setAttribute('href', intentUrl);
+            button.removeAttribute('rel');
+            button.setAttribute('target', '_blank');
+        } else {
+            // Fallback for desktop or unsupported devices — just open glb file
+            button.setAttribute('href', fullGlbUrl);
+            button.removeAttribute('rel');
+            button.setAttribute('target', '_blank');
+        }
+    });
+
     // --- Initial Setup ---
     // Call the show() function once to set up the first slide
     // This ensures the initial image and its associated buttons/content are displayed correctly
